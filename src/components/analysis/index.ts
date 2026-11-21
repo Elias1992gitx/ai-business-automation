@@ -1,1 +1,1 @@
-// Template placeholder for analysis
+export * from "./process-analysis-view";

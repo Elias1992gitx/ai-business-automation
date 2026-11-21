@@ -1,1 +1,1 @@
-// Template placeholder for dashboard
+export * from "./dashboard-overview";

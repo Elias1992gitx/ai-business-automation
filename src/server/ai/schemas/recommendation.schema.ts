@@ -1,6 +1,3 @@
-// Zod schema for validating Gemini recommendation output
-// TODO: Install zod: pnpm add zod
-
 export const recommendationSchema = {
   title: "string",
   rationale: "string",

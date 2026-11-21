@@ -1,1 +1,2 @@
-// Template placeholder for layout
+export * from "./header";
+export * from "./sidebar";

@@ -1,5 +1,3 @@
-// TypeScript types for Process Analysis entities
-
 import type { ImpactLevel, ComplexityLevel } from "./process.types";
 
 export interface ProcessAnalysis {

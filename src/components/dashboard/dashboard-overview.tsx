@@ -2,11 +2,13 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import { useAuth } from "@/src/hooks/use-auth";
 
 interface ProcessItem {
   id: string;
   title: string;
   category: string;
+  owner: string;
   status:
     | "analyzed"
     | "awaiting_approval"
@@ -28,6 +30,7 @@ interface PendingApproval {
 }
 
 export function DashboardOverview() {
+  const { user } = useAuth();
   const [processes, setProcesses] = useState<ProcessItem[]>([]);
   const [pendingApprovals, setPendingApprovals] = useState<PendingApproval[]>(
     [],
@@ -39,8 +42,12 @@ export function DashboardOverview() {
   useEffect(() => {
     async function loadDashboardData() {
       try {
+        const procUrl = user?.email
+          ? `/api/processes?email=${encodeURIComponent(user.email)}&user_id=${user.id}`
+          : "/api/processes";
+
         const [procRes, wfRes, execRes] = await Promise.all([
-          fetch("/api/processes")
+          fetch(procUrl)
             .then((r) => r.json())
             .catch(() => ({ processes: [] })),
           fetch("/api/workflows")
@@ -58,7 +65,6 @@ export function DashboardOverview() {
         setWorkflowsCount(rawWorkflows.length);
         setExecutionsCount(rawExecutions.length);
 
-        // Map pending approvals: workflows that are in draft or awaiting_approval, or approved but not yet executed
         const executedWfIds = new Set(rawExecutions.map((e) => e.workflow_id));
         const pendingWfs = rawWorkflows.filter(
           (wf) =>
@@ -76,13 +82,20 @@ export function DashboardOverview() {
           const procDesc =
             wf.business_processes?.description ||
             "Creates Trello card in Today list + notifies #operations via Telegram & Email";
+          const requester =
+            wf.owner_email ||
+            wf.business_processes?.created_by ||
+            wf.created_by ||
+            wf.business_processes?.user_email ||
+            user?.email ||
+            "Operations Requester";
 
           return {
             id: wf.id,
             workflowId: wf.id,
             title: procTitle,
             description: procDesc,
-            requestedBy: "Elias Chane (Operations)",
+            requestedBy: requester,
             targetQueue: "Today → My Trello board",
             createdAt: wf.created_at
               ? new Date(wf.created_at).toLocaleTimeString([], {
@@ -102,6 +115,11 @@ export function DashboardOverview() {
             category: p.category || "Operations",
             status: (p.status as any) || "analyzed",
             opportunities: 3,
+            owner:
+              p.created_by ||
+              p.user_email ||
+              user?.email ||
+              "Operations User",
             updatedAt: p.created_at
               ? new Date(p.created_at).toLocaleDateString([], {
                   month: "short",
@@ -119,7 +137,7 @@ export function DashboardOverview() {
     }
 
     loadDashboardData();
-  }, []);
+  }, [user]);
 
   const totalProcessesCount = processes.length;
   const timeSavedHours = (executionsCount * 2.5).toFixed(1);
@@ -389,6 +407,7 @@ export function DashboardOverview() {
                 <tr className="border-b border-slate-100 dark:border-slate-800 text-slate-400 dark:text-slate-500 font-semibold uppercase tracking-wider text-[10px]">
                   <th className="pb-3">Process</th>
                   <th className="pb-3">Category</th>
+                  <th className="pb-3">Owner</th>
                   <th className="pb-3">Opportunities</th>
                   <th className="pb-3">Status</th>
                   <th className="pb-3 text-right">Actions</th>
@@ -411,6 +430,11 @@ export function DashboardOverview() {
                       </td>
                       <td className="py-3.5 text-slate-600 dark:text-slate-400">
                         {p.category}
+                      </td>
+                      <td className="py-3.5 text-slate-600 dark:text-slate-400 text-[11px]">
+                        <span className="px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-mono text-[10px]">
+                          {p.owner}
+                        </span>
                       </td>
                       <td className="py-3.5">
                         <span className="text-xs font-medium text-slate-700 dark:text-slate-300">
@@ -457,12 +481,12 @@ export function DashboardOverview() {
                 ) : (
                   <tr>
                     <td
-                      colSpan={5}
+                      colSpan={6}
                       className="py-6 text-center text-slate-400 dark:text-slate-500 text-xs"
                     >
                       {isLoading
                         ? "Loading processes from Supabase..."
-                        : "No processes submitted yet."}
+                        : `No processes submitted yet for ${user?.email || "this account"}.`}
                     </td>
                   </tr>
                 )}

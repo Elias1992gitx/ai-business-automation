@@ -10,21 +10,55 @@ export async function GET(req: NextRequest) {
   try {
     const context = await workspaceService.resolveCurrentWorkspace(req);
     const workspaceId = context.workspace.id;
+    const userId = context.user.id;
+    const userEmail = context.user.email;
+
+    const searchParams = req.nextUrl.searchParams;
+    const filterEmail = searchParams.get("email") || (userEmail !== "elias@acme-operations.com" ? userEmail : undefined);
+    const filterUserId = searchParams.get("user_id") || (userId !== "demo-user-elias" ? userId : undefined);
+    const ownerOnly = searchParams.get("owner_only") === "true";
 
     const supabase = createAdminClient();
-    const { data, error } = await supabase
+    let query = supabase
       .from("business_processes")
       .select("*")
       .eq("workspace_id", workspaceId)
       .order("created_at", { ascending: false });
 
+    // Scoped filtering for the logged-in user or workflow owner
+    if (filterEmail) {
+      query = query.or(`created_by.eq.${filterEmail},user_email.eq.${filterEmail}${filterUserId ? `,user_id.eq.${filterUserId}` : ""}`);
+    } else if (ownerOnly && userEmail) {
+      query = query.or(`created_by.eq.${userEmail},user_email.eq.${userEmail}${userId ? `,user_id.eq.${userId}` : ""}`);
+    }
+
+    const { data, error } = await query;
+
     if (!error && data && data.length > 0) {
       return NextResponse.json({ processes: data });
     }
 
-    // Isolated partition strictly for this workspace (empty array for fresh workspaces)
+    // Isolated partition strictly for this workspace
     const isolatedList = workspaceProcessesStore.get(workspaceId) || [];
-    return NextResponse.json({ processes: isolatedList });
+    let filteredList = isolatedList;
+
+    if (filterEmail) {
+      filteredList = isolatedList.filter(
+        (p) =>
+          p.created_by === filterEmail ||
+          p.user_email === filterEmail ||
+          p.user_id === filterUserId
+      );
+    } else if (ownerOnly && userEmail) {
+      filteredList = isolatedList.filter(
+        (p) =>
+          p.created_by === userEmail ||
+          p.user_email === userEmail ||
+          p.user_id === userId
+      );
+    }
+
+    return NextResponse.json({ processes: filteredList });
   } catch {
     return NextResponse.json({ processes: [] });
   }
@@ -60,6 +94,9 @@ export async function POST(req: NextRequest) {
       description,
       desired_outcome: desired_outcome ?? null,
       constraints: constraints ?? null,
+      category: body.category || "Operations",
+      created_by: context.user.email,
+      user_email: context.user.email,
       status: action === "analyze" ? "analyzed" : "draft",
     };
 

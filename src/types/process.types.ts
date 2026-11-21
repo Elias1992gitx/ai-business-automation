@@ -1,5 +1,3 @@
-// TypeScript types for Business Process entities
-
 import { PROCESS_STATUS, IMPACT_LEVEL, COMPLEXITY_LEVEL } from "@/src/lib/constants";
 
 export type ProcessStatus = (typeof PROCESS_STATUS)[keyof typeof PROCESS_STATUS];

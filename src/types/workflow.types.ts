@@ -1,5 +1,3 @@
-// TypeScript types for Workflow entities
-
 import { ACTION_TYPES } from "@/src/lib/constants";
 
 export type ActionType = (typeof ACTION_TYPES)[keyof typeof ACTION_TYPES];

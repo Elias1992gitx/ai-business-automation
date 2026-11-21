@@ -36,7 +36,7 @@ export function ProcessesListView() {
                   day: "numeric",
                 })
               : "Recently",
-            owner: "Elias Chane",
+            owner: p.created_by || p.user_email || "Operations User",
           }));
           setProcesses(mapped);
         }

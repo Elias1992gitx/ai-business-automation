@@ -1,9 +1,3 @@
-// Zod schema for validating Gemini analysis output
-// TODO: Install zod: pnpm add zod
-// import { z } from "zod";
-
-// Placeholder schema definitions — replace with Zod schemas after installing dependency
-
 export const analysisStageSchema = {
   name: "string",
   description: "string",

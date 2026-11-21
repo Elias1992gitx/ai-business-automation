@@ -1,1 +1,0 @@
-// Template placeholder for ui

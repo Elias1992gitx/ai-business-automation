@@ -1,5 +1,3 @@
-// TypeScript types for Execution entities
-
 export type ExecutionStatus =
   | "pending"
   | "running"

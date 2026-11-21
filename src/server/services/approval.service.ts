@@ -1,10 +1,25 @@
 import { createAdminClient } from "@/src/lib/supabase/server";
+import { findWorkflowInStores, findProcessInStores } from "./workspace.service";
 
 export class ApprovalService {
   async approveWorkflow(
     workflowId: string,
     userId?: string
   ): Promise<{ success: boolean; error?: string }> {
+    // 1. Update in-memory workflow and process status
+    const inMemWf = findWorkflowInStores(workflowId);
+    if (inMemWf) {
+      inMemWf.status = "approved";
+      inMemWf.approved_at = new Date().toISOString();
+      inMemWf.approved_by = userId ?? "Elias Chane";
+    }
+
+    const processId = inMemWf?.process_id || workflowId;
+    const inMemProc = findProcessInStores(processId);
+    if (inMemProc) {
+      inMemProc.status = "approved";
+    }
+
     try {
       const supabase = createAdminClient();
 
@@ -19,12 +34,12 @@ export class ApprovalService {
         .select("process_id")
         .maybeSingle();
 
-      const processId = wf?.process_id || workflowId;
-      if (processId) {
+      const targetProcId = wf?.process_id || processId;
+      if (targetProcId) {
         await supabase
           .from("business_processes")
           .update({ status: "approved" })
-          .eq("id", processId);
+          .eq("id", targetProcId);
       }
 
       return { success: true };
@@ -37,6 +52,18 @@ export class ApprovalService {
     workflowId: string,
     _userId?: string
   ): Promise<{ success: boolean; error?: string }> {
+    // 1. Update in-memory workflow and process status
+    const inMemWf = findWorkflowInStores(workflowId);
+    if (inMemWf) {
+      inMemWf.status = "rejected";
+    }
+
+    const processId = inMemWf?.process_id || workflowId;
+    const inMemProc = findProcessInStores(processId);
+    if (inMemProc) {
+      inMemProc.status = "rejected";
+    }
+
     try {
       const supabase = createAdminClient();
 
@@ -49,12 +76,12 @@ export class ApprovalService {
         .select("process_id")
         .maybeSingle();
 
-      const processId = wf?.process_id || workflowId;
-      if (processId) {
+      const targetProcId = wf?.process_id || processId;
+      if (targetProcId) {
         await supabase
           .from("business_processes")
           .update({ status: "rejected" })
-          .eq("id", processId);
+          .eq("id", targetProcId);
       }
 
       return { success: true };

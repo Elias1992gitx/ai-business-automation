@@ -108,6 +108,56 @@ export const workspaceWorkflowsStore = new Map<string, any[]>([
   ],
 ]);
 
+/**
+ * Multi-tier helper to find a business process across memory stores
+ */
+export function findProcessInStores(processId: string, workspaceId?: string) {
+  if (workspaceId && workspaceProcessesStore.has(workspaceId)) {
+    const list = workspaceProcessesStore.get(workspaceId)!;
+    const found = list.find((p) => p.id === processId);
+    if (found) return found;
+  }
+  for (const list of workspaceProcessesStore.values()) {
+    const found = list.find((p) => p.id === processId);
+    if (found) return found;
+  }
+  return null;
+}
+
+/**
+ * Multi-tier helper to find a workflow across memory stores
+ */
+export function findWorkflowInStores(workflowIdOrProcessId: string, workspaceId?: string) {
+  if (workspaceId && workspaceWorkflowsStore.has(workspaceId)) {
+    const list = workspaceWorkflowsStore.get(workspaceId)!;
+    const found = list.find(
+      (w) => w.id === workflowIdOrProcessId || w.process_id === workflowIdOrProcessId
+    );
+    if (found) return found;
+  }
+  for (const list of workspaceWorkflowsStore.values()) {
+    const found = list.find(
+      (w) => w.id === workflowIdOrProcessId || w.process_id === workflowIdOrProcessId
+    );
+    if (found) return found;
+  }
+  return null;
+}
+
+/**
+ * Helper to update or insert a workflow in the memory store
+ */
+export function saveWorkflowToStore(workspaceId: string, workflow: any) {
+  const current = workspaceWorkflowsStore.get(workspaceId) || [];
+  const existingIdx = current.findIndex((w) => w.id === workflow.id);
+  if (existingIdx >= 0) {
+    current[existingIdx] = { ...current[existingIdx], ...workflow };
+  } else {
+    current.unshift(workflow);
+  }
+  workspaceWorkflowsStore.set(workspaceId, current);
+}
+
 export class WorkspaceService {
   /**
    * Helper to slugify a workspace name with random suffix
@@ -238,6 +288,14 @@ export class WorkspaceService {
       if (memberRows && memberRows.length > 0 && memberRows[0].workspaces) {
         const ws = memberRows[0].workspaces as any;
         inMemoryWorkspaces.set(ws.id, ws);
+        if (user.email) {
+          try {
+            await supabase
+              .from("workspace_settings")
+              .update({ recipient_email: user.email })
+              .eq("workspace_id", ws.id);
+          } catch {}
+        }
         return { workspace: ws, isNew: false };
       }
     } catch {

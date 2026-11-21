@@ -1,1 +1,1 @@
-// Template placeholder for recommendations
+export * from "./recommendations-list-view";

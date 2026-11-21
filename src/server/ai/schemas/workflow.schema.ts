@@ -1,6 +1,3 @@
-// Zod schema for validating Gemini workflow output
-// TODO: Install zod: pnpm add zod
-
 import { ACTION_TYPES } from "@/src/lib/constants";
 
 const ALLOWED_ACTION_TYPES = Object.values(ACTION_TYPES);

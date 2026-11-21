@@ -21,7 +21,8 @@ export async function POST(
     const execution = await executionService.executeWorkflow(
       id,
       idempotencyKey,
-      context.workspace.id
+      context.workspace.id,
+      context.user
     );
 
     return NextResponse.json({
