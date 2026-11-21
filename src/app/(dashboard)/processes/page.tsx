@@ -1,8 +1,5 @@
-export default function ProcessesPage() {
-  return (
-    <div>
-      <h1>Processes</h1>
-    </div>
-  );
-}
+import { ProcessesListView } from "@/src/components/processes/processes-list-view";
 
+export default function ProcessesPage() {
+  return <ProcessesListView />;
+}

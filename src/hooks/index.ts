@@ -1,1 +1,1 @@
-// Template placeholder for hooks
+export * from "./use-auth";

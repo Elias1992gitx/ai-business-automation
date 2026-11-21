@@ -14,7 +14,7 @@ const ALLOWED_ACTIONS = Object.values(ACTION_TYPES).join(", ");
 export function buildWorkflowGenerationPrompt(
   input: WorkflowGenerationPromptInput
 ): string {
-  return `You are an expert workflow designer for FlowPilot AI. Generate an executable workflow based on the following automation recommendation.
+  return `You are an expert workflow designer for AI-Business-Automation. Generate an executable workflow based on the following automation recommendation.
 
 Process: ${input.processTitle}
 Recommendation: ${input.recommendationTitle}

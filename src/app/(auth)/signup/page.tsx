@@ -1,8 +1,10 @@
+import { Suspense } from "react";
+import { SignupView } from "@/src/components/auth/signup-view";
+
 export default function SignupPage() {
   return (
-    <div>
-      <h1>Sign Up</h1>
-    </div>
+    <Suspense fallback={<div className="min-h-screen bg-[#f8fafc]" />}>
+      <SignupView />
+    </Suspense>
   );
 }
-

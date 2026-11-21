@@ -1,3 +1,5 @@
+import { WorkflowReviewView } from "@/src/components/workflows/workflow-review-view";
+
 export const instant = false;
 
 export default async function WorkflowPage({
@@ -6,10 +8,6 @@ export default async function WorkflowPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  return (
-    <div>
-      <h1>Workflow {id}</h1>
-    </div>
-  );
+  return <WorkflowReviewView workflowId={id} />;
 }
 

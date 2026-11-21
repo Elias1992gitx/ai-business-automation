@@ -1,20 +1,30 @@
 import { NextRequest, NextResponse } from "next/server";
 import { validateProcessInput } from "@/src/server/validation/api-validation";
 import { createAdminClient } from "@/src/lib/supabase/server";
+import {
+  workspaceService,
+  workspaceProcessesStore,
+} from "@/src/server/services/workspace.service";
 
-export async function GET(_req: NextRequest) {
+export async function GET(req: NextRequest) {
   try {
+    const context = await workspaceService.resolveCurrentWorkspace(req);
+    const workspaceId = context.workspace.id;
+
     const supabase = createAdminClient();
     const { data, error } = await supabase
       .from("business_processes")
       .select("*")
+      .eq("workspace_id", workspaceId)
       .order("created_at", { ascending: false });
 
-    if (error) {
-      return NextResponse.json({ processes: [] });
+    if (!error && data && data.length > 0) {
+      return NextResponse.json({ processes: data });
     }
 
-    return NextResponse.json({ processes: data ?? [] });
+    // Isolated partition strictly for this workspace (empty array for fresh workspaces)
+    const isolatedList = workspaceProcessesStore.get(workspaceId) || [];
+    return NextResponse.json({ processes: isolatedList });
   } catch {
     return NextResponse.json({ processes: [] });
   }
@@ -22,6 +32,10 @@ export async function GET(_req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   try {
+    const context = await workspaceService.resolveCurrentWorkspace(req);
+    const workspaceId = context.workspace.id;
+    const userId = context.user.id;
+
     const body = await req.json();
     const { title, description, desired_outcome, constraints, action } = body;
 
@@ -40,6 +54,8 @@ export async function POST(req: NextRequest) {
     }
 
     const processPayload = {
+      workspace_id: workspaceId,
+      user_id: userId,
       title,
       description,
       desired_outcome: desired_outcome ?? null,
@@ -56,18 +72,22 @@ export async function POST(req: NextRequest) {
         .single();
 
       if (!error && data) {
+        const list = workspaceProcessesStore.get(workspaceId) || [];
+        workspaceProcessesStore.set(workspaceId, [data, ...list]);
         return NextResponse.json({ process: data }, { status: 201 });
       }
     } catch {
-      // Graceful fallback if database call encounters network limits
+      // Fallback to in-memory store
     }
 
-    // Fallback: return process with synthetic UUID so local UX continues uninterrupted
     const fallbackProcess = {
       id: crypto.randomUUID(),
       ...processPayload,
       created_at: new Date().toISOString(),
     };
+
+    const list = workspaceProcessesStore.get(workspaceId) || [];
+    workspaceProcessesStore.set(workspaceId, [fallbackProcess, ...list]);
 
     return NextResponse.json({ process: fallbackProcess }, { status: 201 });
   } catch (err: any) {

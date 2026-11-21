@@ -1,4 +1,4 @@
-// Trello adapter — maps FlowPilot domain types to Trello API calls
+// Trello adapter — maps AI-Business-Automation domain types to Trello API calls
 
 import { TrelloClient, type TrelloCard } from "./trello.client";
 import type { CreateTrelloCardParams } from "@/src/types/workflow.types";

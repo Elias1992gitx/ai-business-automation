@@ -379,7 +379,7 @@ export function SupabaseIntegration() {
 
           {activeTab === "sql" && (
             <pre className="text-slate-800 whitespace-pre-wrap">
-{`-- Initial schema for FlowPilot AI
+{`-- Initial schema for AI-Business-Automation
 CREATE TABLE public.processes (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   title TEXT NOT NULL,

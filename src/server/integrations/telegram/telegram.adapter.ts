@@ -1,4 +1,4 @@
-// Telegram adapter — maps FlowPilot domain types to Telegram API calls
+// Telegram adapter — maps AI-Business-Automation domain types to Telegram API calls
 
 import { TelegramClient } from "./telegram.client";
 import type { SendTelegramMessageParams } from "@/src/types/workflow.types";

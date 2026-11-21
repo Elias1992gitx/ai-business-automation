@@ -1,4 +1,4 @@
-// Application-wide constants for FlowPilot AI
+// Application-wide constants for AI-Business-Automation
 
 // Process statuses
 export const PROCESS_STATUS = {
@@ -25,6 +25,7 @@ export const EXECUTION_STATUS = {
 export const ACTION_TYPES = {
   CREATE_TRELLO_CARD: "create_trello_card",
   SEND_TELEGRAM_MESSAGE: "send_telegram_message",
+  SEND_EMAIL: "send_email",
   RECORD_EXECUTION_RESULT: "record_execution_result",
 } as const;
 
@@ -46,6 +47,7 @@ export const COMPLEXITY_LEVEL = {
 export const INTEGRATION_PROVIDER = {
   TRELLO: "trello",
   TELEGRAM: "telegram",
+  EMAIL: "email",
 } as const;
 
 // API rate limits

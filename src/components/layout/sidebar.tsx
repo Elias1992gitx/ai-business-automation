@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useAuth } from "@/src/hooks";
 
 interface NavItem {
   label: string;
@@ -11,6 +12,26 @@ interface NavItem {
 
 export function Sidebar() {
   const pathname = usePathname();
+  const { user, signOut } = useAuth();
+
+  const fullName = user?.user_metadata?.full_name || "Elias Chane";
+  const role = user?.user_metadata?.role || "Operations manager";
+  const workspaceName = user?.user_metadata?.workspace_name || "Acme Operations";
+
+  // Derive initials
+  const initials = fullName
+    .split(" ")
+    .filter(Boolean)
+    .map((n: string) => n[0].toUpperCase())
+    .slice(0, 2)
+    .join("") || "EC";
+
+  const workspaceInitials = workspaceName
+    .split(" ")
+    .filter(Boolean)
+    .map((n: string) => n[0].toUpperCase())
+    .slice(0, 2)
+    .join("") || "AO";
 
   const navItems: NavItem[] = [
     {
@@ -59,27 +80,28 @@ export function Sidebar() {
       ),
     },
     {
-      label: "Integrations",
-      href: "/settings/integrations",
+      label: "Settings",
+      href: "/settings",
       icon: (
         <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.75} d="M11 4a2 2 0 114 0v1a1 1 0 001 1h3a1 1 0 011 1v3a1 1 0 01-1 1h-1a2 2 0 100 4h1a1 1 0 011 1v3a1 1 0 01-1 1h-3a1 1 0 01-1-1v-1a2 2 0 10-4 0v1a1 1 0 01-1 1H7a1 1 0 01-1-1v-3a1 1 0 00-1-1H4a2 2 0 110-4h1a1 1 0 001-1V7a1 1 0 011-1h3a1 1 0 001-1V4z" />
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.75} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.75} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
         </svg>
       ),
     },
   ];
 
   return (
-    <aside className="w-64 border-r border-slate-200 bg-white flex flex-col justify-between shrink-0 h-screen sticky top-0">
+    <aside className="w-64 border-r border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 flex flex-col justify-between shrink-0 h-screen sticky top-0 transition-colors duration-200">
       <div>
         {/* App Branding */}
-        <div className="h-16 flex items-center px-6 gap-3 border-b border-slate-100">
-          <div className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center text-white font-bold text-sm tracking-tight shadow-sm">
+        <div className="h-16 flex items-center px-6 gap-3 border-b border-slate-100 dark:border-slate-800">
+          <div className="w-8 h-8 rounded-lg bg-slate-900 dark:bg-white text-white dark:text-slate-900 flex items-center justify-center font-bold text-sm tracking-tight shadow-xs">
             AI
           </div>
           <div>
-            <span className="font-semibold text-slate-900 text-sm tracking-tight block">
-              AI Business Automation
+            <span className="font-semibold text-slate-900 dark:text-white text-sm tracking-tight block">
+              AI-Business-Automation
             </span>
           </div>
         </div>
@@ -89,23 +111,29 @@ export function Sidebar() {
           {navItems.map((item) => {
             const isActive =
               item.href === "/dashboard"
-                ? pathname === "/dashboard" || pathname === "/"
+                ? pathname === "/dashboard"
                 : pathname.startsWith(item.href);
 
             return (
               <Link
                 key={item.href}
                 href={item.href}
-                className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
+                className={`group flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-150 ${
                   isActive
-                    ? "bg-emerald-50 text-emerald-800 font-semibold"
-                    : "text-slate-600 hover:text-slate-900 hover:bg-slate-50"
+                    ? "bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white font-semibold shadow-2xs border-l-2 border-emerald-600 dark:border-emerald-400"
+                    : "text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100/90 dark:hover:bg-slate-800 dark:hover:shadow-2xs"
                 }`}
               >
-                <span className={isActive ? "text-emerald-700" : "text-slate-400"}>
+                <span
+                  className={`transition-colors duration-150 ${
+                    isActive
+                      ? "text-emerald-600 dark:text-emerald-400"
+                      : "text-slate-400 dark:text-slate-400 group-hover:text-emerald-600 dark:group-hover:text-emerald-400"
+                  }`}
+                >
                   {item.icon}
                 </span>
-                {item.label}
+                <span>{item.label}</span>
               </Link>
             );
           })}
@@ -113,56 +141,50 @@ export function Sidebar() {
       </div>
 
       {/* Sidebar Footer */}
-      <div className="p-4 border-t border-slate-100 space-y-3">
+      <div className="p-4 border-t border-slate-100 dark:border-slate-800 space-y-3">
         {/* Workspace Pill */}
-        <div className="flex items-center justify-between p-2 rounded-lg bg-slate-50 border border-slate-200/80 cursor-pointer hover:bg-slate-100/70 transition-colors">
+        <div className="group flex items-center justify-between p-2 rounded-lg bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700 cursor-pointer hover:bg-slate-100/90 dark:hover:bg-slate-800 hover:border-slate-300 dark:hover:border-slate-600 transition-all duration-150">
           <div className="flex items-center gap-2.5 overflow-hidden">
-            <div className="w-6 h-6 rounded bg-slate-800 text-white font-semibold text-xs flex items-center justify-center shrink-0">
-              AO
+            <div className="w-6 h-6 rounded bg-slate-800 dark:bg-slate-700 text-white font-semibold text-xs flex items-center justify-center shrink-0">
+              {workspaceInitials}
             </div>
             <div className="truncate">
-              <span className="text-[10px] text-slate-400 uppercase font-semibold tracking-wider block leading-none">
+              <span className="text-[10px] text-slate-400 dark:text-slate-400 uppercase font-semibold tracking-wider block leading-none">
                 Workspace
               </span>
-              <span className="text-xs font-medium text-slate-800 truncate block mt-0.5">
-                Acme Operations
+              <span className="text-xs font-medium text-slate-800 dark:text-slate-200 group-hover:text-slate-900 dark:group-hover:text-white truncate block mt-0.5">
+                {workspaceName}
               </span>
             </div>
           </div>
-          <svg className="w-4 h-4 text-slate-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <svg className="w-4 h-4 text-slate-400 group-hover:text-slate-600 dark:group-hover:text-slate-200 shrink-0 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 9l4-4 4 4m0 6l-4 4-4-4" />
           </svg>
         </div>
 
-        {/* Help Link */}
-        <a
-          href="#"
-          className="flex items-center gap-2 px-2 py-1 text-xs text-slate-500 hover:text-slate-700 font-medium"
-        >
-          <svg className="w-4 h-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-          </svg>
-          Help & documentation
-        </a>
-
-        {/* User Profile */}
-        <div className="flex items-center justify-between pt-2 border-t border-slate-100 px-1">
+        {/* User Profile with Supabase Sign Out */}
+        <div className="flex items-center justify-between pt-2 border-t border-slate-100 dark:border-slate-800 px-1">
           <div className="flex items-center gap-2.5 overflow-hidden">
-            <div className="w-7 h-7 rounded-full bg-slate-800 text-white font-medium text-xs flex items-center justify-center shrink-0">
-              MC
+            <div className="w-7 h-7 rounded-full bg-slate-800 dark:bg-slate-700 text-white font-medium text-xs flex items-center justify-center shrink-0">
+              {initials}
             </div>
             <div className="truncate">
-              <span className="text-xs font-medium text-slate-800 block truncate">
-                Maya Chen
+              <span className="text-xs font-medium text-slate-800 dark:text-slate-200 block truncate">
+                {fullName}
               </span>
-              <span className="text-[11px] text-slate-500 block truncate">
-                Operations manager
+              <span className="text-[11px] text-slate-500 dark:text-slate-400 block truncate">
+                {role}
               </span>
             </div>
           </div>
-          <button className="text-slate-400 hover:text-slate-600 p-1">
+          <button
+            type="button"
+            onClick={signOut}
+            title="Sign out of Operations Portal"
+            className="text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 p-1.5 rounded-lg hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-colors"
+          >
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 12h.01M12 12h.01M19 12h.01M6 12a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0z" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
             </svg>
           </button>
         </div>
@@ -170,4 +192,3 @@ export function Sidebar() {
     </aside>
   );
 }
-

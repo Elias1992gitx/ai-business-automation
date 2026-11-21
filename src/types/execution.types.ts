@@ -15,6 +15,8 @@ export interface WorkflowExecution {
   started_at: string;
   completed_at?: string | null;
   error_summary?: string | null;
+  execution_steps?: any[];
+  trelloCardUrl?: string;
 }
 
 export interface ExecutionStep {

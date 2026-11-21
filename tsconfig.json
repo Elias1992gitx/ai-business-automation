@@ -19,7 +19,8 @@
       }
     ],
     "paths": {
-      "@/*": ["./*", "./src/*"]
+      "@/*": ["./*", "./src/*"],
+      "nanoid": ["./src/lib/nanoid.ts"]
     }
   },
   "include": [
