@@ -100,7 +100,6 @@ export default function HomePage() {
           id="product"
           className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center"
         >
-          {/* Left Column (Hero Content) */}
           <div className="lg:col-span-5 space-y-6">
             <div className="inline-block px-3 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-[11px] font-bold text-emerald-800 tracking-wider uppercase">
               AI-POWERED OPERATIONS
@@ -403,7 +402,6 @@ export default function HomePage() {
                   <div className="col-span-3" />
                 </div>
 
-                {/* Row 3: Step 7: Monitor */}
                 <div className="flex justify-center">
                   <div className="w-56 bg-white border border-slate-200 rounded-xl p-3 shadow-2xs flex items-center gap-3">
                     <div className="w-7 h-7 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
@@ -433,7 +431,6 @@ export default function HomePage() {
                 </div>
               </div>
 
-              {/* Bottom Card Note */}
               <div className="pt-2 border-t border-slate-100 flex items-center gap-1.5 text-xs text-slate-500">
                 <svg
                   className="w-4 h-4 text-slate-400 shrink-0"
@@ -454,7 +451,6 @@ export default function HomePage() {
           </div>
         </div>
 
-        {/* 3-Item Metric Strip */}
         <div className="bg-slate-100/70 border border-slate-200/90 rounded-2xl p-6 grid grid-cols-1 md:grid-cols-3 gap-6">
           <div className="flex items-center gap-4">
             <div className="w-9 h-9 rounded-xl bg-white border border-slate-200 flex items-center justify-center text-slate-700 shadow-2xs">
@@ -533,7 +529,6 @@ export default function HomePage() {
           </div>
         </div>
 
-        {/* Interactive AI-Elements Workflow Canvas Section */}
         <section id="how-it-works" className="space-y-4 pt-4">
           <div className="space-y-1">
             <div className="inline-block px-3 py-1 rounded-full bg-blue-50 border border-blue-200 text-[11px] font-bold text-blue-800 tracking-wider uppercase">
@@ -542,25 +537,17 @@ export default function HomePage() {
             <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
               Live Flow Architecture & Decision Routing
             </h2>
-            <p className="text-sm text-slate-600 max-w-2xl leading-relaxed">
-              Explore the entire automation lifecycle powered by AI-Elements.
-              Pan, zoom, and inspect each stage: from plain-language intake and
-              Gemini diagnosis to Elias Chane&apos;s human gate and
-              multi-channel dispatch.
-            </p>
           </div>
 
           <BusinessAutomationWorkflowCanvas />
         </section>
 
-        {/* Feature Cards: One clear path from work to outcome */}
         <div id="security" className="space-y-6 pt-4">
           <h3 className="text-2xl font-bold text-slate-900 tracking-tight">
             One clear path from work to outcome
           </h3>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {/* Feature 1 */}
             <div className="bg-white border border-slate-200/90 rounded-2xl p-6 shadow-2xs space-y-3">
               <div className="w-9 h-9 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-center text-slate-800">
                 <svg
@@ -585,7 +572,6 @@ export default function HomePage() {
               </p>
             </div>
 
-            {/* Feature 2 */}
             <div className="bg-white border border-slate-200/90 rounded-2xl p-6 shadow-2xs space-y-3">
               <div className="w-9 h-9 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-center text-slate-800">
                 <svg
@@ -610,7 +596,6 @@ export default function HomePage() {
               </p>
             </div>
 
-            {/* Feature 3 */}
             <div className="bg-white border border-slate-200/90 rounded-2xl p-6 shadow-2xs space-y-3">
               <div className="w-9 h-9 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-center text-slate-800">
                 <svg
@@ -635,7 +620,6 @@ export default function HomePage() {
           </div>
         </div>
 
-        {/* Bottom CTA Banner (Navy Blue) */}
         <div className="bg-[#0a2540] rounded-2xl p-8 sm:p-10 flex flex-col sm:flex-row items-center justify-between gap-6 shadow-md text-white">
           <div className="space-y-1 text-center sm:text-left">
             <h3 className="text-2xl sm:text-3xl font-bold tracking-tight">
@@ -663,7 +647,6 @@ export default function HomePage() {
         </div>
       </main>
 
-      {/* Footer */}
       <footer className="w-full border-t border-slate-200/80 bg-[#f8fafc] py-6 px-6 sm:px-12 mt-12 text-center text-xs text-slate-500">
         <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3">
           <span>
